@@ -170,7 +170,7 @@ class ServerModel with ChangeNotifier {
             }
           } else {
             _zeroClientLengthCounter = 0;
-            if (!hideCm) showCmWindow();
+            //if (!hideCm) showCmWindow();
           }
         }
       }
@@ -542,7 +542,7 @@ class ServerModel with ChangeNotifier {
       if (_clients.isEmpty) {
         hideCmWindow();
       } else if (!hideCm) {
-        showCmWindow();
+        //showCmWindow();
       }
     }
     if (_clients.length != oldClientLenght) {
