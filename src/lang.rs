@@ -41,7 +41,6 @@ pub fn translate_locale(name: String, locale: &str) -> String {
     let lang = lang.to_lowercase();
     let m = match lang.as_str() {
         "zh-cn" => cn::T.deref(),
-        "eu" => eu::T.deref(),
         _ => en::T.deref(),
     };
     let (name, placeholder_value) = extract_placeholder(&name);
