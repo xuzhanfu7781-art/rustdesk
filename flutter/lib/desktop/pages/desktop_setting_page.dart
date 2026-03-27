@@ -1555,6 +1555,7 @@ class _NetworkState extends State<_Network> with AutomaticKeepAliveClientMixin {
         block: locked,
         child: Column(children: [
           network(context),
+          customHostList(context),
         ]),
       ),
     ]).marginOnly(bottom: _kListViewBottomMargin);
@@ -1722,6 +1723,49 @@ class _NetworkState extends State<_Network> with AutomaticKeepAliveClientMixin {
                 ),
             ],
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget customHostList(BuildContext context) {
+    return _Card(
+      title: 'Custom Host List',
+      children: [
+        _LabeledTextField(
+          context,
+          'URL',
+          TextEditingController(text: bind.mainGetLocalOption(key: 'custom-host-list-url')),
+          '',
+          !locked,
+          false,
+          onChanged: (value) {
+            bind.mainSetLocalOption(key: 'custom-host-list-url', value: value.trim());
+            gFFI.customHostModel.fetch();
+          },
+        ),
+        _LabeledTextField(
+          context,
+          'Token',
+          TextEditingController(text: bind.mainGetLocalOption(key: 'custom-host-list-token')),
+          '',
+          !locked,
+          false,
+          onChanged: (value) {
+            bind.mainSetLocalOption(key: 'custom-host-list-token', value: value.trim());
+            gFFI.customHostModel.fetch();
+          },
+        ),
+        _LabeledTextField(
+          context,
+          'Default Password',
+          TextEditingController(text: bind.mainGetLocalOption(key: 'custom-host-list-password')),
+          '',
+          !locked,
+          true,
+          onChanged: (value) {
+            bind.mainSetLocalOption(key: 'custom-host-list-password', value: value.trim());
+          },
         ),
       ],
     );
@@ -2843,7 +2887,8 @@ _LabeledTextField(
     TextEditingController controller,
     String errorText,
     bool enabled,
-    bool secure) {
+    bool secure,
+    {ValueChanged<String>? onChanged}) {
   return Table(
     columnWidths: const {
       0: FixedColumnWidth(150),
@@ -2869,6 +2914,7 @@ _LabeledTextField(
             enabled: enabled,
             obscureText: secure,
             autocorrect: false,
+            onChanged: onChanged,
             decoration: InputDecoration(
               errorText: errorText.isNotEmpty ? errorText : null,
             ),

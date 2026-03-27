@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hbb/common/widgets/address_book.dart';
+import 'package:flutter_hbb/common/widgets/custom_peers_view.dart';
 import 'package:flutter_hbb/common/widgets/dialog.dart';
 import 'package:flutter_hbb/common/widgets/my_group.dart';
 import 'package:flutter_hbb/common/widgets/peers_view.dart';
@@ -65,6 +66,12 @@ class _PeerTabPageState extends State<PeerTabPage>
         menuPadding: _menuPadding(),
       ),
       ({dynamic hint}) => gFFI.groupModel.pull(force: hint == null),
+    ),
+    _TabEntry(
+      CustomPeersView(
+        menuPadding: _menuPadding(),
+      ),
+      ({dynamic hint}) => Get.find<CustomHostModel>().fetch(),
     ),
   ];
   RelativeRect? mobileTabContextMenuPos;

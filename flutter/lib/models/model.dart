@@ -14,7 +14,8 @@ import 'package:flutter_hbb/common/widgets/peers_view.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/models/ab_model.dart';
 import 'package:flutter_hbb/models/chat_model.dart';
-import 'package:flutter_hbb/models/cm_file_model.dart';
+import 'package:flutter_hbb/models/custom_host_model.dart';
+import 'package:flutter_hbb/models/desktop_render_texture.dart';
 import 'package:flutter_hbb/models/file_model.dart';
 import 'package:flutter_hbb/models/group_model.dart';
 import 'package:flutter_hbb/models/peer_model.dart';
@@ -3615,6 +3616,7 @@ class FFI {
   late final FileModel fileModel; // session
   late final AbModel abModel; // global
   late final GroupModel groupModel; // global
+  late final CustomHostModel customHostModel; // global
   late final UserModel userModel; // global
   late final PeerTabModel peerTabModel; // global
   late final QualityMonitorModel qualityMonitorModel; // session
@@ -3646,6 +3648,7 @@ class FFI {
     peerTabModel = PeerTabModel(WeakReference(this));
     abModel = AbModel(WeakReference(this));
     groupModel = GroupModel(WeakReference(this));
+    customHostModel = CustomHostModel();
     qualityMonitorModel = QualityMonitorModel(WeakReference(this));
     recordingModel = RecordingModel(WeakReference(this));
     inputModel = InputModel(WeakReference(this));
