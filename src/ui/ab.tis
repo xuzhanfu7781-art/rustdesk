@@ -379,6 +379,12 @@ class SessionList: Reactor.Component {
     }
 
     event dblclick $(div.remote-session-link) (evt, me) {
+        if (this.type == "custom") {
+            var password = handler.get_local_option("custom-host-list-password");
+            if (password) {
+                handler.set_peer_password(me.id, password);
+            }
+        }
         createNewConnect(me.id, "connect");
     }
     
@@ -427,6 +433,12 @@ class SessionList: Reactor.Component {
         var action = me.id;
         var id = current_menu_peer_id;
         if (action == "connect") {
+            if (this.type == "custom") {
+                var password = handler.get_local_option("custom-host-list-password");
+                if (password) {
+                    handler.set_peer_password(id, password);
+                }
+            }
             createNewConnect(id, "connect");
         } else if (action == "transfer") {
             createNewConnect(id, "file-transfer");
@@ -542,6 +554,7 @@ class MultipleSessions: Reactor.Component {
                     <div style="width:*" .sessions-tab #sessions-type>
                         <span class={!type ? 'active' : 'inactive'}>{translate('Recent sessions')}</span>
                         <span #fav class={type == "fav" ? 'active' : 'inactive'}>{translate('Favorites')}</span>
+                        {handler.get_local_option("custom-host-list-url") && <span #custom class={type == "custom" ? 'active' : 'inactive'}>{translate('Custom')}</span>}
                         {handler.is_installed() && <span #lan class={type == "lan" ? 'active' : 'inactive'}>{translate('Discovered')}</span>}
                         {!disable_account && !disable_ab && <span #ab class={type == "ab" ? 'active' : 'inactive'}>{translate('Address book')}</span>}
                     </div>
@@ -550,6 +563,7 @@ class MultipleSessions: Reactor.Component {
                 </div>
                 {!this.hidden && 
                 ((type == "fav" && <Favorites />) ||
+                (type == "custom" && <CustomHostList />) ||
                 (type == "lan" && handler.is_installed() && <LanPeers />) ||
                 (type == "ab" && !disable_account && !disable_ab && <AddressBook />) ||
                 <SessionList sessions={handler.get_recent_sessions()} />)}
@@ -614,6 +628,69 @@ function discover() {
 
 if (getSessionsType() == "lan" && handler.is_installed()) {
     discover();
+}
+
+var customHosts = [];
+var customHostsLoading = false;
+var customHostsError = "";
+
+class CustomHostList: Reactor.Component {
+    function this() {
+        if (customHosts.length == 0 && !customHostsLoading) {
+            this.getHosts();
+        }
+    }
+
+    function getHosts() {
+        var url = handler.get_local_option("custom-host-list-url");
+        var token = handler.get_local_option("custom-host-list-token");
+        if (!url) return;
+        customHostsLoading = true;
+        customHostsError = "";
+        this.update();
+        var me = this;
+        httpRequest(url, #get, {}, function(data) {
+            customHostsLoading = false;
+            if (data && typeof data == "object") {
+                customHosts = data;
+            } else if (data && typeof data == "string") {
+                try {
+                    customHosts = JSON.parse(data);
+                } catch (e) {
+                    customHostsError = "Failed to parse JSON";
+                }
+            }
+            me.update();
+        }, function(err, status) {
+            customHostsLoading = false;
+            customHostsError = err || ("HTTP Error " + status);
+            me.update();
+        }, "Authorization: Bearer " + token);
+    }
+
+    function render() {
+        if (customHostsLoading) {
+            return <div style="margin: *"><progress style="color: #0071ff" /></div>;
+        }
+        if (customHostsError) {
+            return <div style="margin: *; text-align: center;">{customHostsError}
+                <div .link style="margin-left: 1em;" onclick={this.getHosts}>{translate("Retry")}</div>
+            </div>;
+        }
+        if (customHosts.length == 0) {
+            return <div style="margin: *; text-align: center;">{translate("Empty")}</div>;
+        }
+
+        var list = [];
+        for (var site in customHosts) {
+            list.push(<div .site-group-header style="padding: 10px; background: #eee; font-weight: bold; margin-top: 5px;">{site.site}</div>);
+            list.push(<SessionList sessions={site.hosts} type="custom" />);
+        }
+
+        return <div style="size: *; overflow-y: auto;">
+            {list}
+        </div>;
+    }
 }
 
 class LanPeers: Reactor.Component {

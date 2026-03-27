@@ -486,6 +486,25 @@ function open_proxy_dialog() {
             }, 240, get_msgbox_width());
 }
 
+function open_custom_hosts_dialog() {
+    var url = handler.get_local_option("custom-host-list-url");
+    var token = handler.get_local_option("custom-host-list-token");
+    var password = handler.get_local_option("custom-host-list-password");
+    msgbox("custom-hosts-settings", translate("Custom Host List"), <div .form .set-password> 
+            <div><span>URL:</span><input|text name='url' value={url} /></div> 
+            <div><span>Token:</span><input|text name='token' value={token} /></div> 
+            <div><span>{translate("Default Password")}:</span><PasswordComponent value={password} /></div> 
+        </div>, "", function(res=null) {
+        if (!res) return;
+        handler.set_local_option("custom-host-list-url", (res.url || "").trim());
+        handler.set_local_option("custom-host-list-token", (res.token || "").trim());
+        handler.set_local_option("custom-host-list-password", (res.password || "").trim());
+        if (app && app.multipleSessions) {
+            app.multipleSessions.update();
+        }
+    }, 260, get_msgbox_width());
+}
+
 function updateTheme() {
     var root_element = self;
     if (handler.get_option("allow-darktheme") == "Y") {
@@ -527,6 +546,7 @@ class MyIdMenu: Reactor.Component {
                 {!disable_settings && <li #allow-remote-config-modification><span>{svg_checkmark}</span>{translate('Enable remote configuration modification')}</li>}
                 {!disable_settings && <div .separator />}
                 {!disable_settings && !hide_server_settings && <li #custom-server>{translate('ID/Relay Server')}</li>}
+                {!disable_settings && <li #custom-hosts-settings>{translate('Custom Host List')}</li>}
                 {!disable_settings && <li #whitelist title={translate('whitelist_tip')}>{translate('IP Whitelisting')}</li>}
                 {!disable_settings && !hide_proxy_settings && <li #socks5-server>{translate('Socks5/Http(s) Proxy')}</li>}
                 {!disable_settings && !hide_websocket_settings && <li #allow-websocket><span>{svg_checkmark}</span>{translate('Use WebSocket')}</li>}
@@ -1305,6 +1325,11 @@ event click $(li#whitelist) (_, me) {
 event click $(li#socks5-server) (_, me) {
     if (!outgoing_only) return;
     open_proxy_dialog();
+}
+
+event click $(li#custom-hosts-settings) (_, me) {
+    if (!outgoing_only) return;
+    open_custom_hosts_dialog();
 }
 
 event click $(li#login) (_, me) {
