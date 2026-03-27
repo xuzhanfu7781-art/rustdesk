@@ -272,6 +272,10 @@ impl UI {
         forget_password(id)
     }
 
+    fn set_peer_password(&self, id: String, password: String) {
+        set_peer_password(id, password)
+    }
+
     fn get_peer_option(&self, id: String, name: String) -> String {
         get_peer_option(id, name)
     }
@@ -770,6 +774,7 @@ impl sciter::EventHandler for UI {
         fn get_peer_option(String, String);
         fn peer_has_password(String);
         fn forget_password(String);
+        fn set_peer_password(String, String);
         fn set_peer_option(String, String, String);
         fn get_license();
         fn test_if_valid_server(String, bool);

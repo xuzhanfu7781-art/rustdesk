@@ -300,9 +300,7 @@ pub fn forget_password(id: String) {
 #[inline]
 pub fn set_peer_password(id: String, password: String) {
     let mut c = PeerConfig::load(&id);
-    c.password = config::encrypt_str_or_original(&password, "00", config::ENCRYPT_MAX_LEN)
-        .as_bytes()
-        .to_vec();
+    c.password = password.as_bytes().to_vec();
     c.store(&id);
 }
 
