@@ -1109,6 +1109,11 @@ pub fn main_http_request(url: String, method: String, body: Option<String>, head
     http_request(url, method, body, header)
 }
 
+#[inline]
+pub fn set_peer_password(id: String, password: String) {
+    ui_interface::set_peer_password(id, password);
+}
+
 pub fn main_get_local_option(key: String) -> SyncReturn<String> {
     SyncReturn(get_local_option(key))
 }

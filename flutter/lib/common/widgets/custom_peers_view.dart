@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/common/widgets/peer_card.dart';
 import 'package:flutter_hbb/common/widgets/peers_view.dart';
+import 'package:flutter_hbb/models/peer_model.dart';
 import 'package:flutter_hbb/models/custom_host_model.dart';
 import 'package:flutter_hbb/models/peer_tab_model.dart';
 import 'package:get/get.dart';
@@ -12,7 +13,7 @@ class CustomPeersView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CustomHostModel model = Get.put(CustomHostModel());
+    final CustomHostModel model = gFFI.customHostModel;
     return Obx(() {
       if (model.isLoading.value && model.groups.isEmpty) {
         return const Center(child: CircularProgressIndicator());
@@ -59,16 +60,9 @@ class CustomPeersView extends StatelessWidget {
                   loadEvent: 'load_custom_peers',
                 ),
                 peerTabIndex: PeerTabIndex.custom,
-                peerCardBuilder: (peer) => PeerCard(
+                peerCardBuilder: (peer) => CustomPeerCard(
                   peer: peer,
                   menuPadding: menuPadding,
-                  onDoubleTap: () {
-                    final password = bind.mainGetLocalOption(key: 'custom-host-list-password');
-                    if (password.isNotEmpty) {
-                      bind.setPeerPassword(id: peer.id, password: password);
-                    }
-                    connect(context, peer.id);
-                  },
                 ),
               ),
             ],

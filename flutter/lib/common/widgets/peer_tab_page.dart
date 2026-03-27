@@ -71,7 +71,7 @@ class _PeerTabPageState extends State<PeerTabPage>
       CustomPeersView(
         menuPadding: _menuPadding(),
       ),
-      ({dynamic hint}) => Get.find<CustomHostModel>().fetch(),
+      ({dynamic hint}) => gFFI.customHostModel.fetch(),
     ),
   ];
   RelativeRect? mobileTabContextMenuPos;

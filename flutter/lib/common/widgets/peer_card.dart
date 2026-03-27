@@ -1347,6 +1347,51 @@ class MyGroupPeerCard extends BasePeerCard {
   void _update() => gFFI.groupModel.pull();
 }
 
+class CustomPeerCard extends BasePeerCard {
+  CustomPeerCard({required Peer peer, EdgeInsets? menuPadding, Key? key})
+      : super(
+            peer: peer,
+            tab: PeerTabIndex.custom,
+            menuPadding: menuPadding,
+            key: key);
+
+  @override
+  Future<List<MenuEntryBase<String>>> _buildMenuItems(
+      BuildContext context) async {
+    final List<MenuEntryBase<String>> menuItems = [
+      _connectAction(context),
+      _transferFileAction(context),
+      _viewCameraAction(context),
+      _terminalAction(context),
+    ];
+
+    if (peer.platform == kPeerPlatformWindows) {
+      menuItems.add(_terminalRunAsAdminAction(context));
+    }
+
+    if (isDesktop && peer.platform != kPeerPlatformAndroid) {
+      menuItems.add(_tcpTunnelingAction(context));
+    }
+    if (!isWeb) {
+      menuItems.add(await _forceAlwaysRelayAction(peer.id));
+    }
+    if (isWindows && peer.platform == kPeerPlatformWindows) {
+      menuItems.add(_rdpAction(context, peer.id));
+    }
+    if (isWindows) {
+      menuItems.add(_createShortCutAction(peer.id));
+    }
+    if (gFFI.userModel.userName.isNotEmpty) {
+      menuItems.add(_addToAb(peer));
+    }
+    return menuItems;
+  }
+
+  @protected
+  @override
+  void _update() => gFFI.customHostModel.fetch();
+}
+
 void _rdpDialog(String id) async {
   final maxLength = bind.mainMaxEncryptLen();
   final port = await bind.mainGetPeerOption(id: id, key: 'rdp_port');
@@ -1568,6 +1613,13 @@ void connectInPeerTab(BuildContext context, Peer peer, PeerTabIndex tab,
           isSharedPassword = true;
         }
       }
+    }
+  } else if (tab == PeerTabIndex.custom) {
+    final customPassword =
+        bind.mainGetLocalOption(key: 'custom-host-list-password');
+    if (customPassword.isNotEmpty) {
+      password = customPassword;
+      isSharedPassword = true;
     }
   }
   connect(context, peer.id,

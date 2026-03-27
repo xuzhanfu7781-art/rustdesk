@@ -67,13 +67,13 @@ RxList<RxString> get obslist => [peerSearchText, peerSort].obs;
 final peerSearchTextController =
     TextEditingController(text: peerSearchText.value);
 
-class _PeersView extends StatefulWidget {
+class PeersView extends StatefulWidget {
   final Peers peers;
   final PeerFilter? peerFilter;
   final PeerCardBuilder peerCardBuilder;
   final PeerTabIndex peerTabIndex;
 
-  const _PeersView(
+  const PeersView(
       {required this.peers,
       required this.peerCardBuilder,
       required this.peerTabIndex,
@@ -82,11 +82,11 @@ class _PeersView extends StatefulWidget {
       : super(key: key);
 
   @override
-  _PeersViewState createState() => _PeersViewState();
+  PeersViewState createState() => PeersViewState();
 }
 
 /// State for the peer widget.
-class _PeersViewState extends State<_PeersView>
+class PeersViewState extends State<PeersView>
     with WindowListener, WidgetsBindingObserver {
   static const int _maxQueryCount = 3;
   final HashMap<String, String> _emptyMessages = HashMap.from({
@@ -442,7 +442,7 @@ abstract class BasePeersView extends StatelessWidget {
         peers = gFFI.groupModel.peersModel;
         break;
     }
-    return _PeersView(
+    return PeersView(
         peers: peers,
         peerFilter: peerFilter,
         peerCardBuilder: peerCardBuilder,
